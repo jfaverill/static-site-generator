@@ -1,5 +1,5 @@
 import unittest
-from main import text_node_to_html_node
+from main import text_node_to_html_node, split_nodes_delimiter
 from textnode import TextNode, TextType
 
 class TestTextNodeToHTMLNode(unittest.TestCase):
@@ -15,6 +15,18 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
         self.assertEqual(html_node.tag, "b")
         self.assertEqual(html_node.value, "This text should have bold tags")
         self.assertEqual(html_node.to_html(), "<b>This text should have bold tags</b>")
+
+class TestSplitNodesDelimiter(unittest.TestCase):
+    def test_backtick_delimiter(self):
+        node = TextNode("This is text with a `code block` word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+        self.assertEqual(new_nodes[1].text_type, TextType.CODE)
+
+    def test_asterisks_delimiter(self):
+        node = TextNode("This is text with a **bolded section** included", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(new_nodes[1].text_type, TextType.BOLD)
+        self.assertEqual(new_nodes[1].text, "bolded section")
 
 if __name__ == "__main__":
     unittest.main()
