@@ -1,6 +1,7 @@
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode
 from leafnode import LeafNode
+import re
 
 def text_node_to_html_node(text_node):
     match text_node.text_type:
@@ -38,6 +39,14 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                     new_nodes.append(new_node)
     return new_nodes
 
+def extract_markdown_images(text):
+    image_matches = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+    return image_matches
+
+def extract_markdown_links(text):
+    link_matches = re.findall(r"[^!]\[(.+?)\]\((.+?)\)", text)
+    return link_matches
+
         
 def main():
     tn = TextNode("This is some anchor text",TextType.LINK , "https://www.boot.dev")
@@ -61,5 +70,13 @@ def main():
     node4 = TextNode("This one has `a` problem", TextType.TEXT)
     new_nodes = split_nodes_delimiter([node, node2, node3, node4], "`", TextType.CODE)
     print(new_nodes)
+
+    text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg) and ![ben kenob](https://konami.jpeg)"
+    results = extract_markdown_images(text)
+    print(results)
+
+    text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+    results = extract_markdown_links(text)
+    print(results)
 
 main()

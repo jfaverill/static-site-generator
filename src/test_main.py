@@ -1,5 +1,6 @@
 import unittest
-from main import text_node_to_html_node, split_nodes_delimiter
+from main import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images
+from main import extract_markdown_links
 from textnode import TextNode, TextType
 
 class TestTextNodeToHTMLNode(unittest.TestCase):
@@ -27,6 +28,20 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
         self.assertEqual(new_nodes[1].text_type, TextType.BOLD)
         self.assertEqual(new_nodes[1].text, "bolded section")
+
+class TestExtractMarkdownImagesAndLinks(unittest.TestCase):
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_links(self):
+        matches = extract_markdown_links(
+            "This is text with an [link to jackster](https://www.jackster.com)"
+        )
+        self.assertListEqual([("link to jackster", "https://www.jackster.com")], matches)
+
 
 if __name__ == "__main__":
     unittest.main()
