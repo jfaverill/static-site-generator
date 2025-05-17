@@ -115,7 +115,7 @@ class TestInlineMarkdown(unittest.TestCase):
             new_nodes,
         )
     
-    def test_split_nodes_multi_nodes(self):
+    def test_split_nodes_image_multi_nodes(self):
         node1 = TextNode(
             "![start with image](https://i.imgur.com/imageatstart.png) and some trailing text",
             TextType.TEXT,
@@ -196,6 +196,49 @@ class TestInlineMarkdown(unittest.TestCase):
             [
                 TextNode("link off the bat", TextType.LINK, "https://www.linkbat.com"),
                 TextNode(" and some trailing text", TextType.TEXT),
+            ],
+            new_nodes,
+        )
+
+    def test_split_nodes_link_back_to_back_link(self):
+        node = TextNode(
+            "Setting up for some back-to-back links [to boot dev](https://www.boot.dev)[to youtube](https://www.youtube.com/@bootdotdev) and some trailing text",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("Setting up for some back-to-back links ", TextType.TEXT),
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                TextNode("to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"),
+                TextNode(" and some trailing text", TextType.TEXT),
+            ],
+            new_nodes,
+        )
+
+    def test_split_nodes_link_multi_nodes(self):
+        node1 = TextNode(
+            "[to boot dev](https://www.boot.dev) and some trailing text",
+            TextType.TEXT,
+        )
+        node2 = TextNode(
+            "This node has no links",
+            TextType.TEXT,
+        )
+        node3 = TextNode(
+            "This is text with a link [to jackster](https://www.jackster.com) and another [to youtube](https://www.youtube.com)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node1, node2, node3])
+        self.assertListEqual(
+            [
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                TextNode(" and some trailing text", TextType.TEXT),
+                TextNode("This node has no links", TextType.TEXT),
+                TextNode("This is text with a link ", TextType.TEXT),
+                TextNode("to jackster", TextType.LINK, "https://www.jackster.com"),
+                TextNode(" and another ", TextType.TEXT),
+                TextNode("to youtube", TextType.LINK, "https://www.youtube.com")
             ],
             new_nodes,
         )
