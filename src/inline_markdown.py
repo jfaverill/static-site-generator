@@ -25,7 +25,7 @@ def extract_markdown_images(text):
     return image_matches
 
 def extract_markdown_links(text):
-    link_matches = re.findall(r"[^!]\[(.+?)\]\((.+?)\)", text)
+    link_matches = re.findall(r"(?<!\!)\[(.+?)\]\((.+?)\)", text)
     return link_matches
 
 def split_nodes_image(old_nodes):
@@ -51,4 +51,23 @@ def split_nodes_image(old_nodes):
     return new_nodes
 
 def split_nodes_link(old_nodes):
-    pass
+    new_nodes = []
+    for old_node in old_nodes:
+        link_matches = extract_markdown_links(old_node.text)
+        if old_node.text_type != TextType.TEXT or len(link_matches) == 0:
+            new_nodes.append(old_node)
+        else:
+            old_node_text = old_node.text
+            for link_match in link_matches:
+                link_text, url = link_match
+                node_parts = old_node_text.split(f"[{link_text}]({url})", maxsplit = 1)
+                text_node = TextNode(node_parts[0], old_node.text_type)
+                link_node = TextNode(link_text, TextType.LINK, url)
+                if text_node.text != "":
+                    new_nodes.append(text_node)
+                new_nodes.append(link_node)
+                old_node_text = old_node_text.replace(f"{node_parts[0]}[{link_text}]({url})", "")
+            # get any remaining/trailing text
+            if len(old_node_text) > 0:
+                new_nodes.append(TextNode(old_node_text, old_node.text_type))
+    return new_nodes

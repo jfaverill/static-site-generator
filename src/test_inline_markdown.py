@@ -141,6 +141,64 @@ class TestInlineMarkdown(unittest.TestCase):
             ],
             new_nodes,
         )
+    ##################################
+    # split_nodes_link Tests
+    ##################################
+    def test_split_nodes_link_two_links(self):
+        node = TextNode(
+            "This is text with a link [to jackster](https://www.jackster.com) and another [to youtube](https://www.youtube.com)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with a link ", TextType.TEXT),
+                TextNode("to jackster", TextType.LINK, "https://www.jackster.com"),
+                TextNode(" and another ", TextType.TEXT),
+                TextNode("to youtube", TextType.LINK, "https://www.youtube.com"),
+            ],
+            new_nodes,
+        )
+    
+    def test_split_nodes_link_no_links(self):
+        node = TextNode(
+            "This node has no links",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("This node has no links", TextType.TEXT)
+            ],
+            new_nodes,
+        )
+
+    def test_split_nodes_link_text_type_code(self):
+        node = TextNode(
+            "This node is for a code text type",
+            TextType.CODE,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("This node is for a code text type", TextType.CODE)
+            ],
+            new_nodes,
+        )
+
+    def test_split_nodes_link_start_with_link(self):
+        node = TextNode(
+            "[link off the bat](https://www.linkbat.com) and some trailing text",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("link off the bat", TextType.LINK, "https://www.linkbat.com"),
+                TextNode(" and some trailing text", TextType.TEXT),
+            ],
+            new_nodes,
+        )
 
 if __name__ == "__main__":
     unittest.main()
