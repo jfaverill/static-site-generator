@@ -8,7 +8,8 @@ class TextType(Enum):
     CODE = "code"
     LINK = "link"
     IMAGE = "image"
-
+# TextNode class represents various types of inline text that can 
+# exist in HTML and markdown
 class TextNode():
     # TextNode constructor
     # takes in text and TextType Enum member as required
