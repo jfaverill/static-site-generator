@@ -7,7 +7,7 @@ class BlockType(Enum):
     CODE = "code"
     QUOTE = "quote"
     UNORDERED_LIST = "unordered_list"
-    ORDERDED_LIST = "ordered_list"
+    ORDERED_LIST = "ordered_list"
 
 def block_to_blocktype(block_markdown):
     heading_match = re.search(r"^#{1,6} ", block_markdown)
@@ -21,7 +21,7 @@ def block_to_blocktype(block_markdown):
     if block_markdown.startswith("- "):
         return BlockType.UNORDERED_LIST
     if block_markdown.startswith("1. "):
-        return BlockType.ORDERDED_LIST
+        return BlockType.ORDERED_LIST
     return BlockType.PARAGRAPH
 
 def markdown_to_blocks(markdown):
