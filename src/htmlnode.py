@@ -18,28 +18,38 @@ class HTMLNode():
         raise NotImplementedError("to_html not implemented")
     # method that returns a string that represents the HTML attributes of a node
     def props_to_html(self):
+        # if node has no properties, just return empty string
         if self.props is None:
             return ""
         html_attributes = ""
+        # for each property associated with the node,
+        # format as ' key="value"' (e.g., ' href="https://www.google.com"')
+        # and return the resulting string
         for key, value in self.props.items():
             html_attributes += f" {key}=\"{value}\""
         return html_attributes
     # method to return string representaion of HTMLNode object
     def __repr__(self):
         return f"HTMLNode({self.tag}, {self.value}, children: {self.children}, {self.props})"
-    
+
+# LeafNode class is an HTMLNode that represents a single HTML tag with no children
 class LeafNode(HTMLNode):
+    # LeafNode constructor
+    # inherits from HTMLNode so uses parent's constructor, but takes "None" as "children" 
     def __init__(self, tag, value, props = None):
         super().__init__(tag, value, None, props)
-
+    # method that renders a leaf node as an HTML string
     def to_html(self):
+        # if missing value, return error
         if self.value is None:
             raise ValueError("invalid HTML: no value")
+        # if tag is None, just return value
         if self.tag is None:
             return self.value
+        # otherwise return HTML representation of LeafNode
         else:
             return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
-        
+    # method to return string representaion of LeafNode object
     def __repr__(self):
         return f"LeafNode({self.tag}, {self.value}, {self.props})"
     
