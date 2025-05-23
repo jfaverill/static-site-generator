@@ -26,8 +26,11 @@ class TextNode():
     # method to return string representaion of TextNode object
     def __repr__(self):
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
-   
+
+# function to convert a TextNode into an HTML LeafNode
 def text_node_to_html_node(text_node):
+    # check the incoming text node's text type against the TextType Enum and
+    # create a LeafNode with the appropriate HTML tag and associated attributes
     match text_node.text_type:
         case TextType.TEXT:
             return LeafNode(None, text_node.text)
@@ -42,4 +45,4 @@ def text_node_to_html_node(text_node):
         case TextType.IMAGE:
             return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
         case _:
-            raise Exception("invalid text type")
+            raise Exception(f"invalid text type: {text_node.text_type}")
