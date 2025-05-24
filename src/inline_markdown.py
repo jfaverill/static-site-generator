@@ -1,23 +1,41 @@
 from textnode import TextNode, TextType
 import re
 
+# function that takes a list of "old nodes", a delimiter, and a text type 
+# and returns a new list of nodes, where any "text" type nodes in the input 
+# list are (potentially) split into multiple nodes based on the syntax.
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
+    # loop through all old nodes in the old nodes list
     for old_node in old_nodes:
+        # if the old node is a text type node, then just append it to
+        # the new nodes list
         if old_node.text_type != TextType.TEXT:
             new_nodes.append(old_node)
         else:
-            delimiter_count = old_node.text.count(delimiter)
-            if not (delimiter_count % 2 == 0):
-                raise Exception("invalid markup: no closing delimiter")
+            # otherwise...
+            # split the text of the old node by the incoming delimiter
             node_parts = old_node.text.split(delimiter)
+            # if the node has an opening and closing delimiter, then 
+            # it should always have an odd number of node parts/sections after the split
+            # if it has an even number of sections, then it's missing a closing delimiter
+            # so raise an exception
+            if len(node_parts) % 2 == 0:
+                raise Exception("invalid markup: no closing delimiter") 
+            # loop through each node part...
             for i in range(len(node_parts)):
+                # if it's an odd node part, then it's a non-text type node so create that
+                # using the incoming text type
                 if i % 2 == 1:
                     new_node = TextNode(node_parts[i], text_type)
                 else:
+                    # otherwise it's a text type node, so create that from the original
+                    # text type (which will be be a "text" text type)
                     new_node = TextNode(node_parts[i], old_node.text_type)
+                # if the node's text is not an empty string, then add to the new nodes list
                 if new_node.text != "":
                     new_nodes.append(new_node)
+    # return the list of new nodes
     return new_nodes
 
 def extract_markdown_images(text):
