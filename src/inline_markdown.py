@@ -38,11 +38,17 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     # return the list of new nodes
     return new_nodes
 
+# function to extract image data from markdown text
 def extract_markdown_images(text):
+    # use regex to capture matches of the markdown pattern for images and 
+    # return them as a list of tuples
     image_matches = re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
     return image_matches
 
+# function to extract link data from markdown text
 def extract_markdown_links(text):
+    # use regex to capture matches of the markdown pattern for links and 
+    # return them as a list of tuples
     link_matches = re.findall(r"(?<!\!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
     return link_matches
 
