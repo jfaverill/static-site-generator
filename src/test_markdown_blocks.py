@@ -71,9 +71,14 @@ This is the same paragraph on a new line
         self.assertEqual(BlockType.PARAGRAPH, block_type)
 
     def test_block_to_blocktype_codeblock(self):
-        block_md = "``` This is a code block```"
+        block_md = "```\nThis is a code block\n```"
         block_type = block_to_blocktype(block_md)
         self.assertEqual(BlockType.CODE, block_type)
+    
+    def test_block_to_blocktype_quote(self):
+        block_md = "> 1st quote line\n> 2nd quote line\n> 3rd quote line"
+        block_type = block_to_blocktype(block_md)
+        self.assertEqual(BlockType.QUOTE, block_type)
 
     def test_block_to_blocktype_unordered_list(self):
         block_md = "- This is the first list item in a list block\n- This is a list item\n- This is another list item"
