@@ -24,12 +24,21 @@ def block_to_blocktype(block_markdown):
         return BlockType.ORDERED_LIST
     return BlockType.PARAGRAPH
 
+# function that takes a raw markdown string (representing a full document) 
+# as input and returns a list of "block" strings
 def markdown_to_blocks(markdown):
+    # split the markdown into blocks that are defined as a newline followed by
+    # another newline
     blocks = markdown.split("\n\n")
     new_blocks = []
+    # loop through each block after the split
     for block in blocks:
+        # strip any leading or trailing whitespace
         block = block.strip()
+        # don't allow any empty blocks to be captured
         if block == "":
             continue
+        # add the processed block to the list of new blocks to return
         new_blocks.append(block)
+    # return the list of new blocks
     return new_blocks
