@@ -145,6 +145,7 @@ def create_codeblock_html(codeblock_text):
     # return it
     return ParentNode("pre", [child])
 
+# function to create a blockquote HTML node from quote markup block
 def create_quote_html(quote_text):
     clean_quote_lines = []
     # get the lines in the quote block by splitting on newlines in the text
@@ -155,7 +156,9 @@ def create_quote_html(quote_text):
         clean_quote_lines.append(clean_line)
     # join the individual lines back into a string with newlines
     quote = "\n".join(clean_quote_lines)
+    # search for any child inline HTML nodes in the quote
     children = text_to_children(quote)
+    # return the quote as a parent HTML node
     return ParentNode(tag = "blockquote", children = children)
     
 # does not work with code block type  
