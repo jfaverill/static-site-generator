@@ -1,7 +1,7 @@
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode
 # from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
-from markdown_blocks import create_heading_html, create_codeblock_html
+from markdown_blocks import create_heading_html, create_codeblock_html, create_quote_html
 
 def main():
     # tn = TextNode("This is some anchor text",TextType.LINK , "https://www.boot.dev")
@@ -44,5 +44,19 @@ def main():
 
     md = "```\nThis is text that _should_ remain\nthe **same** even with inline stuff\n```"
     node = create_codeblock_html(md)
+    print(node.to_html())
+
+    quote_text = """
+>Ask not what your country can
+>do for **you**.
+>Ask Rather.
+>Ask Dan Rather.
+>He'll know.
+"""
+    node = create_quote_html(quote_text)
+    print(node.to_html())
+
+    quote_text = ">This is\n>another _important_ quote\n>that we **need to add** for posterity"
+    node = create_quote_html(quote_text)
     print(node.to_html())
 main()

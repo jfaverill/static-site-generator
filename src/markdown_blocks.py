@@ -92,7 +92,7 @@ def markdown_to_html_node(markdown):
             case BlockType.CODE:
                 block_html_node = create_codeblock_html(block)
             case BlockType.QUOTE:
-                tag = "blockquote"
+                block_html_node = create_quote_html(block)
             case BlockType.UNORDERED_LIST:
                 tag = "ul"
             case BlockType.ORDERED_LIST:
@@ -144,6 +144,19 @@ def create_codeblock_html(codeblock_text):
     # link the child node to a new parent HTML node with a "pre" tag and
     # return it
     return ParentNode("pre", [child])
+
+def create_quote_html(quote_text):
+    clean_quote_lines = []
+    # get the lines in the quote block by splitting on newlines in the text
+    quote_lines = quote_text.split("\n")
+    # remove the ">" at the start of each line and add to list of clean lines
+    for line in quote_lines:
+        clean_line = line[1:]
+        clean_quote_lines.append(clean_line)
+    # join the individual lines back into a string with newlines
+    quote = "\n".join(clean_quote_lines)
+    children = text_to_children(quote)
+    return ParentNode(tag = "blockquote", children = children)
     
 # does not work with code block type  
 def text_to_children(text):
