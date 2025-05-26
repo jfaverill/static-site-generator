@@ -1,4 +1,7 @@
 from enum import Enum
+from htmlnode import ParentNode, LeafNode
+from inline_markdown import text_to_textnodes
+from textnode import TextNode, TextType, text_node_to_html_node
 
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
@@ -69,3 +72,64 @@ def markdown_to_blocks(markdown):
         new_blocks.append(block)
     # return the list of new blocks
     return new_blocks
+
+# function that converts a full markdown document into a single
+# parent HTMLNode that contains many child HTMLNode objects representing
+# the nested elemments
+def markdown_to_html_node(markdown):
+    block_html_nodes = []
+    # split the markdown into blocks
+    blocks = markdown_to_blocks(markdown)
+    # loop over each block
+    for block in blocks:
+        # determine the type of block
+        block_type = block_to_blocktype(block)
+        # get the tag associated with the block type
+        tag = None
+        match block_type:
+            case BlockType.HEADING:
+                tag = create_heading_html(block)
+            case BlockType.CODE:
+                tag = "code"
+            case BlockType.QUOTE:
+                tag = "blockquote"
+            case BlockType.UNORDERED_LIST:
+                tag = "ul"
+            case BlockType.ORDERED_LIST:
+                tag = "ol"
+            case _:
+                tag = "p"
+        # get the inline children within the block
+        children = None
+        if block_type != BlockType.CODE:
+            children = text_to_children(block)
+        else:
+            code_text = block
+            child = text_node_to_html_node(TextNode(text = code_text, text_type = TextType.TEXT))
+            children = [child] #ParentNode("pre", child)
+        block_html_node = ParentNode(tag, children)
+        block_html_nodes.append(block_html_node)
+    return ParentNode("div", block_html_nodes)
+
+def create_heading_html(heading_block_text):
+    # find the first space, and then substring everything up to that point
+    # to determine the heading level, and to also remove that from the markup
+    first_space_index = heading_block_text.find(" ")
+    heading_chars = heading_block_text[:first_space_index]
+    heading_chars_count = heading_chars.count("#")
+    heading_level = f"h{heading_chars_count}"
+    heading_text = heading_block_text[first_space_index + 1:]
+
+    children = text_to_children(heading_text)
+    #return LeafNode(tag = heading_level, value = heading_text)
+    return ParentNode(tag = heading_level, children = children)
+    
+# does not work with code block type  
+def text_to_children(text):
+    html_nodes = []
+    text_nodes =  text_to_textnodes(text)
+    for text_node in text_nodes:
+        html_node = text_node_to_html_node(text_node)
+        html_nodes.append(html_node)
+    return html_nodes
+    
