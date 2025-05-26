@@ -1,7 +1,7 @@
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode
 # from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
-from markdown_blocks import create_heading_html
+from markdown_blocks import create_heading_html, create_codeblock_html
 
 def main():
     # tn = TextNode("This is some anchor text",TextType.LINK , "https://www.boot.dev")
@@ -33,13 +33,16 @@ def main():
     # text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
     # results = extract_markdown_links(text)
     # print(results)
-    heading_text = """
-# This is a _heading_ that will
-be split over a great, great
-**many** lines just to see how this whole
-heading gets handled
-"""
-    node = create_heading_html(heading_text)
-    print(node.to_html())
+#     heading_text = """
+# # This is a _heading_ that will
+# be split over a great, great
+# **many** lines just to see how this whole
+# heading gets handled
+# """
+#     node = create_heading_html(heading_text)
+#     print(node.to_html())
 
+    md = "```\nThis is text that _should_ remain\nthe **same** even with inline stuff\n```"
+    node = create_codeblock_html(md)
+    print(node.to_html())
 main()

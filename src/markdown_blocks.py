@@ -84,13 +84,13 @@ def markdown_to_html_node(markdown):
     for block in blocks:
         # determine the type of block
         block_type = block_to_blocktype(block)
-        # get the tag associated with the block type
-        tag = None
+        # get the HTML node associated with the block type
+        block_html_node = None
         match block_type:
             case BlockType.HEADING:
-                tag = create_heading_html(block)
+                block_html_node = create_heading_html(block)
             case BlockType.CODE:
-                tag = "code"
+                block_html_node = create_codeblock_html(block)
             case BlockType.QUOTE:
                 tag = "blockquote"
             case BlockType.UNORDERED_LIST:
@@ -111,18 +111,39 @@ def markdown_to_html_node(markdown):
         block_html_nodes.append(block_html_node)
     return ParentNode("div", block_html_nodes)
 
+# function to create a heading HTML node from heading markup block
 def create_heading_html(heading_block_text):
-    # find the first space, and then substring everything up to that point
-    # to determine the heading level, and to also remove that from the markup
+    # find the first space in the markup to determine where the heading begins
     first_space_index = heading_block_text.find(" ")
+    # get the heading characters by grabbing all up to the position of the 
+    # first space
     heading_chars = heading_block_text[:first_space_index]
-    heading_chars_count = heading_chars.count("#")
-    heading_level = f"h{heading_chars_count}"
+    # get the remaining text after the heading characters and the space
     heading_text = heading_block_text[first_space_index + 1:]
-
+    # get the count of the heading characters to determine the heading level
+    heading_chars_count = heading_chars.count("#")
+    # formate the heading level (e.g., h1, h2, etc.)
+    heading_level = f"h{heading_chars_count}"
+    # search for any child inline HTML nodes in the heading
     children = text_to_children(heading_text)
-    #return LeafNode(tag = heading_level, value = heading_text)
+    # return the heading as a parent HTML node
     return ParentNode(tag = heading_level, children = children)
+
+# function to create a code block HTML node from code block markup
+def create_codeblock_html(codeblock_text):
+    # get the lines in the code block by splitting on the newlines in the text
+    codeblock_lines = codeblock_text.split("\n")
+    # remove the first and last lines (which will have the ```)
+    code = codeblock_lines[1:-1]
+    # join the individual lines back into a string with newlines
+    code = "\n".join(code)
+    # create a code type text node out of the code text
+    code_text_node = TextNode(text = code, text_type = TextType.CODE)
+    # create a child leaf HTML node out of the text node
+    child = text_node_to_html_node(code_text_node)
+    # link the child node to a new parent HTML node with a "pre" tag and
+    # return it
+    return ParentNode("pre", [child])
     
 # does not work with code block type  
 def text_to_children(text):
