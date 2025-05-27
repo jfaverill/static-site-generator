@@ -1,7 +1,10 @@
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode
 # from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
-from markdown_blocks import create_heading_html, create_codeblock_html, create_quote_html
+from markdown_blocks import (create_heading_html, 
+                             create_codeblock_html, 
+                             create_quote_html,
+                             create_list_html)
 
 def main():
     # tn = TextNode("This is some anchor text",TextType.LINK , "https://www.boot.dev")
@@ -59,4 +62,14 @@ def main():
     quote_text = ">This is\n>another _important_ quote\n>that we **need to add** for posterity"
     node = create_quote_html(quote_text)
     print(node.to_html())
+
+    ul_text = "- First unordered list item\n- Second item\n- and this is the third item"
+    node = create_list_html(ul_text, False)
+    print(node.to_html())
+
+    ol_text = "1. Ask not what _your country_ can\n2. do for **you**.\n3. Ask Dan Rather."
+
+    node = create_list_html(ol_text, True)
+    print(node.to_html())
+
 main()

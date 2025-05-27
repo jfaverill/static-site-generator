@@ -154,13 +154,30 @@ def create_quote_html(quote_text):
     for line in quote_lines:
         clean_line = line[1:]
         clean_quote_lines.append(clean_line)
-    # join the individual lines back into a string with newlines
-    quote = "\n".join(clean_quote_lines)
+    # join the individual lines back into a string with space-delimiter and strip
+    # leading and trailing spaces
+    quote = " ".join(clean_quote_lines).strip()
+    # quote = "\n".join(clean_quote_lines)
     # search for any child inline HTML nodes in the quote
     children = text_to_children(quote)
     # return the quote as a parent HTML node
     return ParentNode(tag = "blockquote", children = children)
-    
+
+def create_list_html(list_text, ordered):
+    list_item_html_nodes = []
+    list_item_start_index = list_text.find(" ") + 1
+    list_tag = "ul"
+    if ordered:
+        list_tag = "ol"
+    #split the list into lines
+    list_items = list_text.split("\n")
+    for list_item in list_items:
+        list_item_text = list_item[list_item_start_index:]
+        children = text_to_children(list_item_text)
+        list_item_html_node = ParentNode(tag = "li", children = children)
+        list_item_html_nodes.append(list_item_html_node)
+    return ParentNode(tag = list_tag, children = list_item_html_nodes)
+
 # does not work with code block type  
 def text_to_children(text):
     html_nodes = []
