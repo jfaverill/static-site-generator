@@ -93,22 +93,22 @@ This is the same paragraph on a new line
         block_type = block_to_blocktype(block_md)
         self.assertEqual(BlockType.ORDERED_LIST, block_type)
 
-#     def test_paragraphs(self):
-#         md = """
-# This is **bolded** paragraph
-# text in a p
-# tag here
+    def test_paragraphs(self):
+        md = """
+This is **bolded** paragraph
+text in a p
+tag here
 
-# This is another paragraph with _italic_ text and `code` here
+This is another paragraph with _italic_ text and `code` here
 
-# """
+"""
 
-#         node = markdown_to_html_node(md)
-#         html = node.to_html()
-#         self.assertEqual(
-#             html,
-#             "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
-#         )
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
 
     def test_codeblock(self):
         md = """
@@ -123,4 +123,45 @@ the **same** even with inline stuff
         self.assertEqual(
             html,
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+        )
+
+    def test_heading(self):
+        md = """
+### This is a **multi-line**
+header so _let's see_
+what happens
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><h3>This is a <b>multi-line</b> header so <i>let's see</i> what happens</h3></div>",
+        )
+
+    def test_quote(self):
+        md = ">This is\n>another _important_ quote\n>that we **need to add** for posterity"
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>This is another <i>important</i> quote that we <b>need to add</b> for posterity</blockquote></div>",
+        )
+
+    def test_unordered_list(self):
+        md = "- First unordered list item\n- Second item\n- and this is the third item"
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>First unordered list item</li><li>Second item</li><li>and this is the third item</li></ul></div>",
+        )
+
+    def test_ordered_list(self):
+        md = "1. Ask not what _your country_ can\n2. do for **you**.\n3. Ask Dan Rather."
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ol><li>Ask not what <i>your country</i> can</li><li>do for <b>you</b>.</li><li>Ask Dan Rather.</li></ol></div>",
         )

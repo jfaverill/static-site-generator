@@ -94,20 +94,11 @@ def markdown_to_html_node(markdown):
             case BlockType.QUOTE:
                 block_html_node = create_quote_html(block)
             case BlockType.UNORDERED_LIST:
-                tag = "ul"
+                block_html_node = create_list_html(block, ordered = False)
             case BlockType.ORDERED_LIST:
-                tag = "ol"
+                block_html_node = create_list_html(block, ordered = True)
             case _:
-                tag = "p"
-        # get the inline children within the block
-        children = None
-        if block_type != BlockType.CODE:
-            children = text_to_children(block)
-        else:
-            code_text = block
-            child = text_node_to_html_node(TextNode(text = code_text, text_type = TextType.TEXT))
-            children = [child] #ParentNode("pre", child)
-        block_html_node = ParentNode(tag, children)
+                block_html_node = create_paragraph_html(block)
         block_html_nodes.append(block_html_node)
     return ParentNode("div", block_html_nodes)
 
@@ -141,7 +132,7 @@ def create_codeblock_html(codeblock_text):
     # remove the first and last lines (which will have the ```)
     code = codeblock_lines[1:-1]
     # join the individual lines back into a string with newlines
-    code = "\n".join(code)
+    code = "\n".join(code) + "\n"
     # create a code type text node out of the code text
     code_text_node = TextNode(text = code, text_type = TextType.CODE)
     # create a child leaf HTML node out of the text node
@@ -168,6 +159,7 @@ def create_quote_html(quote_text):
     # return the quote as a parent HTML node
     return ParentNode(tag = "blockquote", children = children)
 
+# function to create a list HTML node from list markup block
 def create_list_html(list_text, ordered):
     list_item_html_nodes = []
     list_item_start_index = list_text.find(" ") + 1
