@@ -122,10 +122,15 @@ def create_heading_html(heading_block_text):
     heading_text = heading_block_text[first_space_index + 1:]
     # get the count of the heading characters to determine the heading level
     heading_chars_count = heading_chars.count("#")
-    # formate the heading level (e.g., h1, h2, etc.)
+    # format the heading level (e.g., h1, h2, etc.)
     heading_level = f"h{heading_chars_count}"
+    # split the heading text into lines by splitting on the newlines in the text
+    heading_lines = heading_text.split("\n")
+    # join the individual lines back into a string with space-delimiter and strip
+    # leading and trailing spaces
+    heading = " ".join(heading_lines).strip()
     # search for any child inline HTML nodes in the heading
-    children = text_to_children(heading_text)
+    children = text_to_children(heading)
     # return the heading as a parent HTML node
     return ParentNode(tag = heading_level, children = children)
 
