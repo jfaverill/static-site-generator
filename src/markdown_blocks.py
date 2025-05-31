@@ -178,6 +178,18 @@ def create_list_html(list_text, ordered):
         list_item_html_nodes.append(list_item_html_node)
     return ParentNode(tag = list_tag, children = list_item_html_nodes)
 
+# function to create a paragraph HTML node from paragraph markup block
+def create_paragraph_html(paragraph_text):
+    # split the paragraph text into lines using newline characters
+    paragraph_lines = paragraph_text.split("\n")
+    # join the lines into a string without newlines by joining on space
+    # strip any leading or trailing spaces
+    paragraph = " ".join(paragraph_lines).strip()
+    # search for any child inline HTML nodes in the paragraph
+    children = text_to_children(paragraph)
+    # return the paragraph as a parent HTML node
+    return ParentNode(tag = "p", children = children)
+
 # does not work with code block type  
 def text_to_children(text):
     html_nodes = []
