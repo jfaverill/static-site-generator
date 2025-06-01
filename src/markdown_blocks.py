@@ -1,5 +1,5 @@
 from enum import Enum
-from htmlnode import ParentNode, LeafNode
+from htmlnode import ParentNode
 from inline_markdown import text_to_textnodes
 from textnode import TextNode, TextType, text_node_to_html_node
 
@@ -99,7 +99,9 @@ def markdown_to_html_node(markdown):
                 block_html_node = create_list_html(block, ordered = True)
             case _:
                 block_html_node = create_paragraph_html(block)
+        # add the block HTML node to the list of block HTML nodes
         block_html_nodes.append(block_html_node)
+    # return the block HTML nodes as a parent HTML node wrapped in a div tag
     return ParentNode("div", block_html_nodes)
 
 # function to create a heading HTML node from heading markup block
@@ -131,7 +133,8 @@ def create_codeblock_html(codeblock_text):
     codeblock_lines = codeblock_text.split("\n")
     # remove the first and last lines (which will have the ```)
     code = codeblock_lines[1:-1]
-    # join the individual lines back into a string with newlines
+    # join the individual lines back into a string with newlines and add a newline
+    # at the end
     code = "\n".join(code) + "\n"
     # create a code type text node out of the code text
     code_text_node = TextNode(text = code, text_type = TextType.CODE)
@@ -147,13 +150,13 @@ def create_quote_html(quote_text):
     # get the lines in the quote block by splitting on newlines in the text
     quote_lines = quote_text.split("\n")
     # remove the ">" at the start of each line and add to list of clean lines
+    # strip leading/trailing spaces from each line
     for line in quote_lines:
-        clean_line = line[1:]
+        clean_line = line[1:].strip()
         clean_quote_lines.append(clean_line)
     # join the individual lines back into a string with space-delimiter and strip
     # leading and trailing spaces
     quote = " ".join(clean_quote_lines).strip()
-    # quote = "\n".join(clean_quote_lines)
     # search for any child inline HTML nodes in the quote
     children = text_to_children(quote)
     # return the quote as a parent HTML node
@@ -162,17 +165,26 @@ def create_quote_html(quote_text):
 # function to create a list HTML node from list markup block
 def create_list_html(list_text, ordered):
     list_item_html_nodes = []
-    list_item_start_index = list_text.find(" ") + 1
     list_tag = "ul"
+    # if ordered is true, set tag to "ol" for ordered list
     if ordered:
         list_tag = "ol"
-    #split the list into lines
+    #split the list into lines by splitting on newline 
     list_items = list_text.split("\n")
     for list_item in list_items:
+        # find the first space index + 1 to get where the actual 
+        # list item text starts
+        list_item_start_index = list_item.find(" ") + 1
+        # get the actual text associated with the list item by removing
+        # the characters that indicate ordered or unordered list items
         list_item_text = list_item[list_item_start_index:]
+        # search for any child inline HTML nodes in the list item text
         children = text_to_children(list_item_text)
+        # create an HTML node for the list item
         list_item_html_node = ParentNode(tag = "li", children = children)
+        # add the list item HTML node to the list of list item HTML nodes
         list_item_html_nodes.append(list_item_html_node)
+    # return the HTML node for the list with list items as children
     return ParentNode(tag = list_tag, children = list_item_html_nodes)
 
 # function to create a paragraph HTML node from paragraph markup block
@@ -187,12 +199,18 @@ def create_paragraph_html(paragraph_text):
     # return the paragraph as a parent HTML node
     return ParentNode(tag = "p", children = children)
 
-# does not work with code block type  
+# function to transform text into a list of HTML nodes  
 def text_to_children(text):
     html_nodes = []
+    # create a list of text nodes from the incoming text
     text_nodes =  text_to_textnodes(text)
+    # loop through the text nodes created
     for text_node in text_nodes:
+        # create an HTML node out of each text node that will
+        # apply the appropriate inline HTML tags based on the markup
         html_node = text_node_to_html_node(text_node)
+        # add the HTML node to the list of HTML nodes
         html_nodes.append(html_node)
+    # return the list of HTML nodes
     return html_nodes
     
