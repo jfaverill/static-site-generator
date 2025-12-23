@@ -8,7 +8,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
     # loop through all old nodes in the old nodes list
     for old_node in old_nodes:
-        # if the old node is a text type node, then just append it to
+        # if the old node is not a text type node, then just append it to
         # the new nodes list
         if old_node.text_type != TextType.TEXT:
             new_nodes.append(old_node)
